@@ -4,7 +4,7 @@ library(plotly)
 
 info <- read.csv('data/Provider_Info.csv')
 
-View(info)
+#View(info)
 
 ui <- fluidPage(
           
@@ -17,10 +17,10 @@ ui <- fluidPage(
            selectInput('filter_state', label = "Filter by:", choices = 
                          c('comparative data', 'individual data')
            ),
-           selectInput('filter_stars',  choices = 
+           selectInput('filter_stars',  label = "Filter by:", choices = 
                          c('comparative data', 'individual data')
            ),
-           selectInput('filter_penalties', choices = 
+           selectInput('filter_penalties', label = "Filter by:", choices = 
                          c('comparative data', 'individual data')
            ),
            verbatimTextOutput('summary'),
@@ -30,7 +30,7 @@ ui <- fluidPage(
     )
 
   )
-  
-
-  
 )
+  
+shinyUI(ui)
+  
