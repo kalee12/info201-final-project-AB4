@@ -7,7 +7,8 @@ info <- read.csv('data/Provider_Info.csv')
 #View(info)
 
 ui <- fluidPage(
-          
+  
+  titlePanel("Nursing Home Finder") ,         
   navbarPage(
     tabPanel("About the Project" 
              
