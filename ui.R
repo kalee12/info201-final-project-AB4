@@ -11,6 +11,15 @@ ui <- flowLayout(
     ),
     tabPanel("Data Analysis",
            plotOutput("map"),
+           selectInput('filter_state', label = "Filter by:", choices = 
+                         c('comparative data', 'individual data')
+           ),
+           selectInput('filter_stars',  choices = 
+                         c('comparative data', 'individual data')
+           ),
+           selectInput('filter_penalties', choices = 
+                         c('comparative data', 'individual data')
+           )
            
            
     ),
