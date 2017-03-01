@@ -2,11 +2,14 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 
+info <- read.csv('data/Provider_Info.csv')
 
-ui <- flowLayout(
+View(info)
+
+ui <- fluidPage(
           
   navbarPage(
-    tabPanel("About the Project",
+    tabPanel("About the Project" 
              
     ),
     tabPanel("Data Analysis",
@@ -19,10 +22,12 @@ ui <- flowLayout(
            ),
            selectInput('filter_penalties', choices = 
                          c('comparative data', 'individual data')
-           )
+           ),
+           verbatimTextOutput('summary'),
+           dataTableOutput('table')
            
            
-    ),
+    )
 
   )
   
