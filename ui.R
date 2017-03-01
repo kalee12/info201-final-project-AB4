@@ -8,29 +8,32 @@ info <- read.csv('data/Provider_Info.csv')
 
 ui <- fluidPage(
   
-  titlePanel("Nursing Home Finder") ,         
+  titlePanel("Nursing Home Finder"),
   navbarPage(
     tabPanel("About the Project" 
              
     ),
     tabPanel("Data Analysis",
            plotOutput("map"),
-           selectInput('filter_state', label = "Filter by:", choices = 
+           
+           column(2, selectInput('filter_state', label = "Filter by:", choices = 
                          c('comparative data', 'individual data')
-           ),
-           selectInput('filter_stars',  label = "Filter by:", choices = 
+           )),
+           column(2,selectInput('filter_stars',  label = "Filter by:", choices = 
                          c('comparative data', 'individual data')
-           ),
-           selectInput('filter_penalties', label = "Filter by:", choices = 
+           )),
+           column(2,selectInput('filter_penalties', label = "Filter by:", choices = 
                          c('comparative data', 'individual data')
-           ),
-           verbatimTextOutput('summary'),
+           )),
+           br(),
+           br(),
+           br(),
+           br(),
            dataTableOutput('table')
-           
-           
     )
 
   )
+  
 )
   
 shinyUI(ui)
