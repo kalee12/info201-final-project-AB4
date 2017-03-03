@@ -26,7 +26,8 @@ ui <- fluidPage(
                  ),
                  #
                  mainPanel(
-                   plotOutput("map")
+                   #plotOutput("map")
+                   leafletOutput("lemap")
                  )
                  
                ),
