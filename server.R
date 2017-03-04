@@ -81,7 +81,7 @@ server <- function(input, output) {
     } else {
       m <- leaflet() %>% 
         addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(39.0119, 98.4842, zoom = 1)
+        setView(-95.712891, 37.090240, zoom = 3)
     }
     return(m)
   })
