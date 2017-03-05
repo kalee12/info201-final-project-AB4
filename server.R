@@ -112,15 +112,15 @@ server <- function(input, output) {
   # print the selected indices
   output$general <- renderPrint({
     s = input$table_rows_selected
-    name <- houses.info$Name[s]
-    address <- houses.info$Address[s]
-    city <- houses.info$City[s]
-    state <- houses.info$State[s]
-    phone <- houses.info$Phone.Number[s]
+    name <- houses$Provider.Name[s]
+    address <- houses$Provider.Address[s]
+    city <- houses$Provider.City[s]
+    state <- houses$Provider.State[s]
+    phone <- houses$Provider.Phone.Number[s]
     zip <- houses$Provider.Zip.Code[s]
     if (length(s)) {
       cat(name, "\n\n", 
-          "Address: ",address, ", ", city, ", ", state, " ", zip, "\n\n",
+          "Address: ",address, ", ", city, ", ", state, zip, "\n\n",
           "Phone Number: ", phone )
     }
   })
