@@ -1,37 +1,64 @@
+# Karen
+
 library(dplyr)
 library(ggplot2)
 library(plotly)
+library(shiny)
 
-info <- read.csv('data/Provider_Info.csv')
-
-#View(info)
+data("state")
+state.name
 
 ui <- fluidPage(
-  
-  titlePanel("Nursing Home Finder") ,         
-  navbarPage(
-    tabPanel("About the Project" 
-             
+   imageOutput("logo", height = "150px", width = "200px"), 
+  tabsetPanel(
+    tabPanel("Introduction",
+             p("Hello")),
+    tabPanel("Data",
+             verticalLayout(
+               sidebarLayout(
+                 sidebarPanel(
+                   #fluidRow(
+                   selectInput("state", "Location", c("National", state.name)),
+                   selectInput("category", "Category", c("All", "Ratings", "Penalties")),
+                   width = 3,
+                   div(
+                     h4("Glossory (Scrollable):"),
+                     HTML("<b>1) Certified Nurse (CN):</b> A certified nursing assistant, 
+                         or CNA, helps patients or clients with healthcare needs 
+                         under the supervision of a<i> Registered Nurse (RN)</i> or a <i>Licensed 
+                         Practical Nurse (LPN)</i>.</br><b>2) Registered Nurse (RN): </b> A nurse who 
+                         has graduated from a nursing program and has sucesfully obtained a 
+                         license.</br><b>3) Licensed Practical Nurse (LPN):</b> A nurse who cares for 
+                        people who are sick, injured, convalescent, or disabled. LPNs work 
+                          under the direction of registered nurses or physicians."),
+                     style = "height: 200px; overflow:scroll;"
+                   )
+                 ),
+                 
+                 #
+                 mainPanel(
+                   
+                   plotOutput("map")
+                 )
+                 
+               ),
+               sidebarLayout(
+                 sidebarPanel(
+                   tabsetPanel(
+                     tabPanel("One", textOutput("text")),
+                     tabPanel("Two", textOutput("house"))
+                   ),
+                   width = 3
+                 ),
+                 mainPanel(
+                   dataTableOutput("table")
+                 )
+               )
+             )
     ),
-    tabPanel("Data Analysis",
-           plotOutput("map"),
-           selectInput('filter_state', label = "Filter by:", choices = 
-                         c('comparative data', 'individual data')
-           ),
-           selectInput('filter_stars',  label = "Filter by:", choices = 
-                         c('comparative data', 'individual data')
-           ),
-           selectInput('filter_penalties', label = "Filter by:", choices = 
-                         c('comparative data', 'individual data')
-           ),
-           verbatimTextOutput('summary'),
-           dataTableOutput('table')
-           
-           
-    )
-
+    tabPanel("Something Else",
+             p("Hello"))
   )
 )
-  
+
 shinyUI(ui)
-  
