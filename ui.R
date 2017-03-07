@@ -1,5 +1,3 @@
-# Karen
-
 library(dplyr)
 library(ggplot2)
 library(plotly)
@@ -9,10 +7,11 @@ data("state")
 state.name
 
 ui <- fluidPage(
-   imageOutput("logo", height = "150px", width = "200px"), 
+  imageOutput("logo", height = "150px", width = "200px"), 
   tabsetPanel(
     tabPanel("Introduction",
              p("Hello")),
+    
     tabPanel("Data",
              verticalLayout(
                sidebarLayout(
@@ -32,32 +31,30 @@ ui <- fluidPage(
                         people who are sick, injured, convalescent, or disabled. LPNs work 
                           under the direction of registered nurses or physicians."),
                      style = "height: 200px; overflow:scroll;"
-                   )
-                 ),
-                 
-                 #
-                 mainPanel(
-                   
-                   plotOutput("map")
-                 )
-                 
-               ),
-               sidebarLayout(
-                 sidebarPanel(
-                   tabsetPanel(
-                     tabPanel("One", textOutput("text")),
-                     tabPanel("Two", textOutput("house"))
                    ),
-                   width = 3
+                   
+                   
+                   
+                   mainPanel(
+                     leafletOutput("lemap")
+                   )
+                   
                  ),
-                 mainPanel(
-                   dataTableOutput("table")
+                 
+                 fluidRow(
+                   
+                   column(5, tabsetPanel(tabPanel("General Info", verbatimTextOutput('general')),
+                                         tabPanel("Ratings", verbatimTextOutput('ratings')),
+                                         tabPanel("Penalties", verbatimTextOutput('penalties')),
+                                         tabPanel("Other", verbatimTextOutput('other')))),
+                   column(7, DT::dataTableOutput('table'))
+                   
+                   
+                   
                  )
                )
              )
-    ),
-    tabPanel("Something Else",
-             p("Hello"))
+    )
   )
 )
 

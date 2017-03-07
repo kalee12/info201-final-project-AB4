@@ -1,5 +1,6 @@
 library(choroplethrMaps)
 library(leaflet)
+
 library(dplyr)
 library(ggplot2)
 library(plotly)
@@ -14,10 +15,12 @@ penalty <- read.csv("data/Penalties.csv", stringsAsFactors = FALSE)
 
 houses <- read.csv("data/Provider_Info.csv", stringsAsFactors = FALSE) 
 
-houses.info <- houses %>% select(Provider.Name, Provider.Phone.Number, 
-                                 Provider.Address, Provider.City, Provider.State)
+houses.info <- houses %>% select(Federal.Provider.Number, Provider.Name, Provider.Phone.Number, 
+                                 Provider.Address, Provider.City, Provider.State, 
+                                 Total.Number.of.Penalties, Overall.Rating)
 
-colnames(houses.info) <- c("Name", "Phone.Number", "Address", "City", "State")
+colnames(houses.info) <- c("Federal.Provider.Number", "Name", "Phone.Number", "Address", "City", 
+                           "State", "Total.Penalties", "Overall.Rating")
 
 general.info <- houses %>% select(Provider.Name, Provider.Phone.Number, 
                                   Provider.Address, Provider.City, Provider.State,
@@ -44,6 +47,23 @@ server <- function(input, output) {
       return(houses)
     }
   })
+  
+  table.filter <- reactive({
+    houses.info <- mutate(houses.info, "Penalty" = ifelse(Total.Penalties != 0, "Yes", "No")) %>% 
+      select(Name, Phone.Number, Address, City, State, Penalty, Overall.Rating)
+    if (input$state != "National") {
+      houses.info <- filter(houses.info, State == state.abb[match(input$state, state.name)])
+    }
+    if (input$category == "Ratings"){
+      houses.info <- select(houses.info, Name, Phone.Number, Address, City, State, Overall.Rating)
+    }
+    if (input$category == "Penalties"){
+      houses.info <- select(houses.info, Name, Phone.Number, Address, City, State, Penalty)
+    }
+    return(houses.info)
+    }
+  )
+  
   output$logo <- renderImage({
     list(src = "data/info201logo.png",
          contentType = 'image/png',
@@ -70,18 +90,18 @@ server <- function(input, output) {
       points <- na.omit(data.frame(houses.data$Provider.Name, long, lat, stringsAsFactors = FALSE))
       print(length(houses$Provider.Name))
       print(colnames(houses.data))
-      
+
       p <- ggplot() + geom_polygon(data = state, aes(x = long, y = lat, group = group)) + coord_fixed(1.3) +
         geom_point(data = points, aes(x = long, y = lat), color = "blue", size = 3) +
         geom_point(data = points, aes(x = long, y = lat), color = "black", size = 2)
       g <- list(scope = "usa")
       x <- plot_geo(data = points, x = ~long, y = ~lat) %>% layout(geo = g)
     }
-    
+
     return(x)
     #return(p)
   })
-  
+
   output$lemap <- renderLeaflet({
     houses.data <- interest()
     if (input$state != "National") {
@@ -100,20 +120,20 @@ server <- function(input, output) {
         iconUrl = "data/pin.png",
         iconWidth = 60, iconHeight = 50
       )
-      m <- leaflet(data = points) %>% 
-        addProviderTiles(providers$CartoDB.Positron) %>% 
-        setView(points$long[1], points$lat[1], zoom = 6) %>% 
+      m <- leaflet(data = points) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(points$long[1], points$lat[1], zoom = 6) %>%
         addMarkers(~long, ~lat, popup = "hi", label = "hello", icon = icon)
-      
+
     } else {
-      m <- leaflet() %>% 
+      m <- leaflet() %>%
         addProviderTiles(providers$CartoDB.Positron) %>%
         setView(-95.712891, 37.090240, zoom = 3)
     }
     return(m)
   })
   
-  output$table <- DT::renderDataTable(houses.info, server = TRUE, selection = "single")
+  output$table <- DT::renderDataTable(table.filter(), server = TRUE, selection = "single")
   
   # print the selected indices
   output$general <- renderPrint({
@@ -183,6 +203,7 @@ server <- function(input, output) {
           reported.total, "reported total nurse hours out of", expected.total, "expected hours", "\n\n")
     }
   })
-
+  
 }
+
 shinyServer(server)
