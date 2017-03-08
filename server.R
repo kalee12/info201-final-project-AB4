@@ -61,13 +61,13 @@ server <- function(input, output) {
       houses.info <- select(houses.info, Name, Phone.Number, Address, City, State, Penalty)
     }
     return(houses.info)
-    }
+  }
   )
   
   output$logo <- renderImage({
     list(src = "data/info201logo.png",
          contentType = 'image/png',
-         width = 200,
+         width = 500,
          height = 200,
          alt = "Unable to display image")
   }, deleteFile = FALSE)
@@ -90,18 +90,18 @@ server <- function(input, output) {
       points <- na.omit(data.frame(houses.data$Provider.Name, long, lat, stringsAsFactors = FALSE))
       print(length(houses$Provider.Name))
       print(colnames(houses.data))
-
+      
       p <- ggplot() + geom_polygon(data = state, aes(x = long, y = lat, group = group)) + coord_fixed(1.3) +
         geom_point(data = points, aes(x = long, y = lat), color = "blue", size = 3) +
         geom_point(data = points, aes(x = long, y = lat), color = "black", size = 2)
       g <- list(scope = "usa")
       x <- plot_geo(data = points, x = ~long, y = ~lat) %>% layout(geo = g)
     }
-
+    
     return(x)
     #return(p)
   })
-
+  
   output$lemap <- renderLeaflet({
     houses.data <- interest()
     if (input$state != "National") {
@@ -124,7 +124,7 @@ server <- function(input, output) {
         addProviderTiles(providers$CartoDB.Positron) %>%
         setView(points$long[1], points$lat[1], zoom = 6) %>%
         addMarkers(~long, ~lat, popup = "hi", label = "hello", icon = icon)
-
+      
     } else {
       m <- leaflet() %>%
         addProviderTiles(providers$CartoDB.Positron) %>%
