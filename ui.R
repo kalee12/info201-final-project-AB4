@@ -4,7 +4,7 @@ library(plotly)
 library(shiny)
 
 data("state")
-state.name
+state.name 
 ratings.range<- range(1,5)
 
 
