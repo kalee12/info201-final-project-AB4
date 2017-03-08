@@ -55,7 +55,7 @@ ui <- fluidPage(
                       tabItems(
                         # First tab content
                         tabItem(tabName = "introduction",
-                                helpText("Display Some Text here")
+                                textOutput('introduction')
                         ),
                         tabItem(tabName = "datatable",
                                 tabBox(title = "Selection Summary", 
