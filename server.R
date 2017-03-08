@@ -99,7 +99,7 @@ server <- function(input, output) {
         long <- c(long, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[3]))
         lat <- c(lat, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[2]))
       }
-      points <- na.omit(data.frame(houses.data$Name, long, lat, stringsAsFactors = FALSE))
+      points <- na.omit(data.frame(houses.data$Name, houses.data$Overall.Rating, long, lat, stringsAsFactors = FALSE))
       icon <- makeIcon(
         iconUrl = "data/pin.png",
         iconWidth = 60, iconHeight = 50
@@ -107,7 +107,7 @@ server <- function(input, output) {
       m <- leaflet(data = points) %>%
         addProviderTiles(providers$CartoDB.Positron) %>%
         setView(points$long[1], points$lat[1], zoom = 6) %>%
-        addMarkers(~long, ~lat, popup = "hi", label = "hello", icon = icon)
+        addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
       
     } else {
       m <- leaflet() %>%
