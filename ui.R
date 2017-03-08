@@ -3,37 +3,48 @@ library(ggplot2)
 library(plotly)
 library(shiny)
 library(shinydashboard)
-
+ratings.range<- range(1,5)
 data("state")
 state.name
 
 ui <- fluidPage(
   imageOutput("logo", height = "200px", width = "600px"), 
   dashboardPage(skin = "blue", 
-                dashboardHeader(title = "Dashboard"),
+                dashboardHeader(title = "Dashboard",
+                dropdownMenu(icon = icon("font"),  
+                             messageItem(
+                               from = "Sales Dept",
+                               message = "Sales are steady this month."
+                             ))),
                 dashboardSidebar(
                   sidebarMenu(
                     menuItem("About", tabName = "introduction", icon = icon("users")),
                     menuItem("Data Table", tabName = "datatable", icon = icon("table")),
-                    menuItem("Map", tabName = "map", icon = icon("map-marker")),
+                    menuItem("Graph", tabName = "graph", icon = icon("map-marker")),
                     selectInput("state", "Location", c("National", state.name)),
-                    selectInput("category", "Category", c("All", "Ratings", "Penalties")),
-                    box(title = "Glossry", height = "250px", width = 12,
-                        verticalLayout(
-                          div(
-                            h4("Glossory (Scrollable):"),
-                            HTML("<b>1) Certified Nurse (CN):</b> A certified nursing assistant,
-                                or CNA, helps patients or clients with healthcare needs
-                                under the supervision of a<i> Registered Nurse (RN)</i> or a <i>Licensed
-                                Practical Nurse (LPN)</i>.</br><b>2) Registered Nurse (RN): </b> A nurse who
-                                has graduated from a nursing program and has sucesfully obtained a
-                                license.</br><b>3) Licensed Practical Nurse (LPN):</b> A nurse who cares for
-                               people who are sick, injured, convalescent, or disabled. LPNs work
-                                 under the direction of registered nurses or physicians."),
-                            style = "height: 200px; overflow-y:scroll; color:black;"
-                          )
-                        )
+                    # selectInput("category", "Category", c("All", "Ratings", "Penalties")),
+                    sliderInput("ratings", "Filter by Nursing Home Ratings:",
+                                min=ratings.range[1], max=ratings.range[2], value=ratings.range),
+                    radioButtons("radio", "Filter by Fines:",
+                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, "All" = 3),selected = 3
                     )
+                    
+                    # box(title = "Glossry", height = "250px", width = 12,
+                    #     verticalLayout(
+                    #       div(
+                    #         h4("Glossory (Scrollable):"),
+                    #         HTML("<b>1) Certified Nursing Assistant (CNA):</b> A certified nursing assistant,
+                    #             or CNA, helps patients or clients with healthcare needs
+                    #             under the supervision of a<i> Registered Nurse (RN)</i> or a <i>Licensed
+                    #             Practical Nurse (LPN)</i>.</br><b>2) Registered Nurse (RN): </b> A nurse who
+                    #             has graduated from a nursing program and has sucesfully obtained a
+                    #             license.</br><b>3) Licensed Practical Nurse (LPN):</b> A nurse who cares for
+                    #            people who are sick, injured, convalescent, or disabled. LPNs work
+                    #              under the direction of registered nurses or physicians."),
+                    #         style = "height: 200px; overflow:auto; color:black;"
+                    #       )
+                    #     )
+                    # )
                     
                     
                     
@@ -49,11 +60,12 @@ ui <- fluidPage(
                         tabItem(tabName = "datatable",
                                 tabBox(title = "Selection Summary", 
                                        # The id lets us use input$tabset1 on the server to find the current tab
-                                       id = "tabset1", height = "270px", width = 11, side = "right",
+                                       id = "tabset1", height = "450px", width = 11, side = "right",
                                        tabPanel("General Info", verbatimTextOutput('general')),
                                        tabPanel("Ratings", verbatimTextOutput('ratings')),
                                        tabPanel("Penalties", verbatimTextOutput('penalties')),
-                                       tabPanel("Other", verbatimTextOutput('other'))
+                                       tabPanel("Other", verbatimTextOutput('other')),
+                                       tabPanel("Map", leafletOutput("lemap"))
                                 ),
                                 
                                 br(),
@@ -61,12 +73,7 @@ ui <- fluidPage(
                                     br(), width = 11, 
                                     column(5, DT::dataTableOutput('table'))
                                 )
-                                # sidebarPanel(
-                                #   column(3, sidebarPanel(tabPanel("General Info", verbatimTextOutput('general')),
-                                #                          tabPanel("Ratings", verbatimTextOutput('ratings')),
-                                #                          tabPanel("Penalties", verbatimTextOutput('penalties')),
-                                #                          tabPanel("Other", verbatimTextOutput('other')))
-                                #   )
+                                
                         )
                       )
                   )
