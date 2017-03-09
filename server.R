@@ -176,11 +176,6 @@ server <- function(input, output) {
         setView(-95.712891, 37.090240, zoom = 4) %>% 
         addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
     }
-    #} else {
-    #m <- leaflet() %>%
-    #  addProviderTiles(providers$CartoDB.Positron) %>%
-    #  setView(-95.712891, 37.090240, zoom = 3)
-    #}
     return(m)
   })
   
