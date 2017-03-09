@@ -91,9 +91,9 @@ ui <- fluidPage(
                     selectInput("state", "Location", c("National", state.name)),
                     # selectInput("category", "Category", c("All", "Ratings", "Penalties")),
                     sliderInput("ratings", "Filter by Nursing Home Ratings:",
-                                min=ratings.range[1], max=ratings.range[2], value= c(5, 5)),
+                                min=ratings.range[1], max=ratings.range[2], value= c(3, 3)),
                     radioButtons("radio", "Filter by Fines:",
-                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, "All" = 3),selected = 1
+                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, "All" = 3),selected = 3
                     )
                   )
                 ),
@@ -121,6 +121,9 @@ ui <- fluidPage(
                                 )
                         ),
                         tabItem(tabName = "graph",
+                                p("The default graphs represent national data. In order to alter the graphs, use the location dropdown.",
+                                  style = "font-size:20px;"),
+                                br(),
                                 box(title = textOutput("viz"), solidHeader = TRUE, status = "primary",
                                     plotOutput("pie")),
                                 box(title = textOutput("viz2"), solidHeader = TRUE, status = "primary",
@@ -132,6 +135,7 @@ ui <- fluidPage(
                                 box(title = "Point Graph Summary", status = "primary",
                                     textOutput("point.graph.summary")
                                 )
+                                
                                 
                         )
                       )
