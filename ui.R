@@ -191,15 +191,24 @@ ui <- fluidPage(
                                     column(5, DT::dataTableOutput('table'))
                                 )
                         ),
+                        
+                        # adds the statistical analysis tab
                         tabItem(tabName = "graph",
+                                
+                                # adds the title, the header style and the status of the pie chart
                                 box(title = textOutput("viz"), solidHeader = TRUE, status = "primary",
                                     plotOutput("pie")),
+                                
+                                # adds the title, the header style and the status of the scatter plot
                                 box(title = textOutput("viz2"), solidHeader = TRUE, status = "primary",
                                     plotOutput("bar")),
                                 
+                                # adds the title and status for the summary of the pie chart
                                 box(title = "Pie Chart Summary", status = "primary",
                                     textOutput("pie.chart.summary")
                                 ),
+                                
+                                # adds the title and status for the summary of the scatter plot
                                 box(title = "Point Graph Summary", status = "primary",
                                     textOutput("point.graph.summary")
                                 )
@@ -208,9 +217,7 @@ ui <- fluidPage(
                       )
                   )
                 )
-                                                   )
-                                                   )
-
-
+          )
+)
 
 shinyUI(ui)

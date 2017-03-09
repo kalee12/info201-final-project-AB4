@@ -383,23 +383,40 @@ server <- function(input, output) {
     return(pie)
   })
   
-  # outputs a bar graph comparing the overall ratings with the maximum penalty frequency in that rating, for the nursing homes
-  # in the filtered state
+  # outputs a bar graph comparing the overall ratings with the maximum penalty frequency in that rating, 
+  # for the nursing homes in the filtered state
   output$bar <- renderPlot({
+    
+    # converts the string to the numeric form to help graph the scatter plot
+    
+    # strips the total amount of fine from the dollar sign
     col <- sub("\\$","", houses$Total.Amount.of.Fines.in.Dollars)
+    
+    # strips the decimal value from the above column
     col <- sub("\\.00", "", col)
+    
+    # finally converts the string to the numeric and dividing by 1000 to help 
+    # graph the numbers relatively
     col <- as.numeric(col) / 10000
     
+    # adds a new column to the total amount of fines using the above nurmeric column change
     houses <- mutate(houses, Total.Fines = col)
+    
+    # filters the house data set according to the state chosen by the user
     if (input$state != "National") {
       data <- filter(houses, Provider.State == state.abb[match(input$state, state.name)])
       data <- na.omit(data)
     } else {
       data <- na.omit(houses)
     }
-    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, color = Overall.Rating)) + geom_point(size = 5) +
-      labs(x = "Overall Rating", y = "Fine in (Ten-Thousand) Dollars", fill = "Overall Rating") + guides(color = FALSE) +
-      theme(axis.title = element_text(size = 16))
+    
+    # plots the scatter plot using the overall rating and the maximum penalty for the nursing
+    # homes in the state chosen
+    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, color = Overall.Rating)) + 
+           geom_point(size = 5) +
+           labs(x = "Overall Rating", y = "Fine in (Ten-Thousand) Dollars", fill = "Overall Rating") + 
+           guides(color = FALSE) +
+           theme(axis.title = element_text(size = 16))
     return(bar)
   })
   
