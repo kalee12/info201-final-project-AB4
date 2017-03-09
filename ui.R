@@ -65,7 +65,7 @@ ui <- fluidPage(
                                                                     under the supervision of <br/> Registered Nurse (RN) or a <br/>
                                                                     Licensed Practical Nurse (LPN)."),
                                                      icon = icon("user-md")
-                                                   ),
+                                                     ),
                                                    
                                                    messageItem(
                                                      from = "Registered Nurse (RN):",
@@ -73,16 +73,16 @@ ui <- fluidPage(
                                                                     has graduated from a <br/>nursing program and has sucesfully
                                                                     <br/>obtained a license."),
                                                      icon = icon("user-md")                 
-                                                   ),
+                                                     ),
                                                    messageItem(
                                                      from = "Licensed Practical Nurse (LPN):",
                                                      message = HTML("A nurse who cares for
                                                                     people who are sick, <br/>injured, convalescent, or disabled. LPNs <br/>
                                                                     work under the direction of registered <br/>nurses or physicians."),
                                                      icon = icon("user-md") 
+                                                     )
                                                    )
-                                )
-                ),
+                                                   ),
                 dashboardSidebar(
                   sidebarMenu(
                     menuItem("About", tabName = "introduction", icon = icon("users")),
@@ -141,8 +141,8 @@ ui <- fluidPage(
                       )
                   )
                 )
-  )
-)
+                                                   )
+                                )
 
 
 

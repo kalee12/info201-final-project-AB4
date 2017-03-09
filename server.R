@@ -114,7 +114,7 @@ server <- function(input, output) {
            like to see in the table. There is a glossary available for you to help understand the difference 
            between the different types of Nurses available and their respective information given in the table."
       )
-    )
+      )
   })
   
   output$pie.chart.summary <- renderPrint({
@@ -140,8 +140,8 @@ server <- function(input, output) {
     
     cat("This is a pie chart showing the frequency of ratings in", input$state, 
         "that consists of 5 colors, 1 for each rating: red for 1 star rating, 
-         orange for 2 star rating, yellow for 3 star rating, light green for 4 star rating, 
-         and dark green for 5 star rating. The frequency of 1 star rating was", r1, 
+        orange for 2 star rating, yellow for 3 star rating, light green for 4 star rating, 
+        and dark green for 5 star rating. The frequency of 1 star rating was", r1, 
         ", the frequency of 2 star rating was", r2, ", the frequency of 3 star rating was", r3,
         ", the frequency of 4 star rating was", r4, ", the frequency of 5 star rating was", r5, ".")
     
@@ -382,6 +382,6 @@ server <- function(input, output) {
   })
   
   
-}
+  }
 
 shinyServer(server)
