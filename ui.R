@@ -121,12 +121,19 @@ ui <- fluidPage(
                                 )
                         ),
                         tabItem(tabName = "graph",
-                                # verticalLayout(
-                                  box(title = textOutput("viz"),
-                                      plotOutput("pie")),
-                                  box(title = textOutput("viz2"),
-                                      plotOutput("bar")))
-                        # )
+                                box(title = textOutput("viz"), solidHeader = TRUE, status = "primary",
+                                    plotOutput("pie")),
+                                box(title = textOutput("viz2"), solidHeader = TRUE, status = "primary",
+                                    plotOutput("bar")),
+                                
+                                box(title = "Pie Chart Summary", status = "primary",
+                                    textOutput("pie.chart.summary")
+                                ),
+                                box(title = "Point Graph Summary", status = "primary",
+                                    textOutput("point.graph.summary")
+                                )
+                                
+                        )
                       )
                   )
                 )

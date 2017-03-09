@@ -124,6 +124,16 @@ server <- function(input, output) {
                                 )
   })
   
+  output$pie.chart.summary <- renderPrint({
+    
+    ###### Insert summary 1 here ############
+  })
+  
+  output$point.graph.summary <- renderPrint({
+    
+    ###### Insert summary 2 here ############
+  })
+  
   output$logo <- renderImage({
     list(src = "data/info201logo.png",
          contentType = 'image/png',
