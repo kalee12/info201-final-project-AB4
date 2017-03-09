@@ -1,19 +1,21 @@
 library(dplyr)
 library(ggplot2)
-library(plotly)
 library(shiny)
 library(shinydashboard)
 library(leaflet)
+
 ratings.range<- range(1,5)
 data("state")
-state.name
+
+# Sentence to override default shinydashboard UI
 customSentence <- function(numItems, type) {
   strong("Data abbrevations defined (Scrollable):")
 }
-# Function to call in place of dropdownMenu
+
+# Function to call in place of default dropdownMenu
 dropdownMenuCustom <- function (..., type = c("messages", "notifications", "tasks"), 
-                                badgeStatus = "primary", icon = NULL, .list = NULL, customSentence = customSentence) 
-{
+                                badgeStatus = "primary", icon = NULL, .list = NULL, 
+                                customSentence = customSentence) {
   type <- match.arg(type)
   if (!is.null(badgeStatus)) shinydashboard:::validateStatus(badgeStatus)
   items <- c(list(...), .list)
@@ -33,22 +35,18 @@ dropdownMenuCustom <- function (..., type = c("messages", "notifications", "task
   }
   tags$li(
     class = dropdownClass, 
-    a(
-      href = "#", 
+    a(href = "#", 
       class = "dropdown-toggle", 
       `data-toggle` = "dropdown", 
       icon, 
-      badge
-    ), 
+      badge), 
     tags$ul(
       class = "dropdown-menu", 
       tags$li(
         class = "header", 
-        customSentence(numItems, type)
-      ), 
+        customSentence(numItems, type)), 
       tags$li(
-        tags$ul(class = "menu", items)
-      )
+        tags$ul(class = "menu", items))
     )
   )
 }
@@ -61,28 +59,33 @@ ui <- fluidPage(
                                                    customSentence = customSentence, 
                                                    messageItem(
                                                      from = "Certified Nursing Assistant (CNA):",
-                                                     message = HTML("Helps patients or clients with healthcare <br/>needs
-                                                                    under the supervision of <br/> Registered Nurse (RN) or a <br/>
-                                                                    Licensed Practical Nurse (LPN)."),
-                                                     icon = icon("user-md")
-                                                     ),
+                                                     message = HTML("Helps patients or clients with
+                                                                    healthcare <br/> needs
+                                                                    under the supervision of <br/> 
+                                                                    Registered Nurse (RN) or a 
+                                                                    <br/> Licensed Practical Nurse 
+                                                                    (LPN)."),
+                                                     icon = icon("user-md")),
                                                    
                                                    messageItem(
                                                      from = "Registered Nurse (RN):",
                                                      message = HTML("A nurse who
-                                                                    has graduated from a <br/>nursing program and has sucesfully
-                                                                    <br/>obtained a license."),
-                                                     icon = icon("user-md")                 
-                                                     ),
+                                                                    has graduated from a <br/>
+                                                                    nursing program and has 
+                                                                    sucessfully <br/>obtained 
+                                                                    a license."),
+                                                     icon = icon("user-md")),
+                                                   
                                                    messageItem(
                                                      from = "Licensed Practical Nurse (LPN):",
                                                      message = HTML("A nurse who cares for
-                                                                    people who are sick, <br/>injured, convalescent, or disabled. LPNs <br/>
-                                                                    work under the direction of registered <br/>nurses or physicians."),
-                                                     icon = icon("user-md") 
-                                                     )
-                                                   )
-                                                   ),
+                                                                    people who are sick, <br/>
+                                                                    injured, convalescent, or 
+                                                                    disabled. LPNs <br/>
+                                                                    work under the direction 
+                                                                    of registered <br/>nurses or 
+                                                                    physicians."),
+                                                     icon = icon("user-md")))),
                 dashboardSidebar(
                   sidebarMenu(
                     menuItem("About", tabName = "introduction", icon = icon("users")),
@@ -93,8 +96,8 @@ ui <- fluidPage(
                     sliderInput("ratings", "Filter by Nursing Home Ratings:",
                                 min=ratings.range[1], max=ratings.range[2], value= c(3, 3)),
                     radioButtons("radio", "Filter by Fines:",
-                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, "All" = 3),selected = 3
-                    )
+                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, 
+                                                "All" = 3),selected = 3)
                   )
                 ),
                 dashboardBody(
@@ -106,11 +109,16 @@ ui <- fluidPage(
                         ),
                         tabItem(tabName = "datatable",
                                 tabBox(title = "Selection Summary", 
-                                       # The id lets us use input$tabset1 on the server to find the current tab
-                                       id = "tabset1", height = "470px", width = 11, side = "right",
-                                       tabPanel("Map", leafletOutput("lemap"), icon = icon("map-marker")),
-                                       tabPanel("Ratings & Penalties", verbatimTextOutput('ratings'), 
-                                                hr(),verbatimTextOutput('penalties')),
+                                       id = "tabset1", 
+                                       height = "470px", 
+                                       width = 11, 
+                                       side = "right",
+                                       tabPanel("Map", leafletOutput("lemap"), 
+                                                icon = icon("map-marker")),
+                                       tabPanel("Ratings & Penalties", 
+                                                verbatimTextOutput('ratings'), 
+                                                hr(),
+                                                verbatimTextOutput('penalties')),
                                        tabPanel("Other", verbatimTextOutput('other')),
                                        tabPanel("General Info", verbatimTextOutput('general'))
                                 ),
@@ -121,29 +129,26 @@ ui <- fluidPage(
                                 )
                         ),
                         tabItem(tabName = "graph",
-                                p("The default graphs represent national data. In order to alter the graphs, use the location dropdown.",
+                                p("The default graphs represent national data. 
+                                  In order to alter the graphs, use the location dropdown.",
                                   style = "font-size:20px;"),
                                 br(),
-                                box(title = textOutput("viz"), solidHeader = TRUE, status = "primary",
+                                box(title = textOutput("viz"), solidHeader = TRUE, 
+                                    status = "primary",
                                     plotOutput("pie")),
-                                box(title = textOutput("viz2"), solidHeader = TRUE, status = "primary",
+                                box(title = textOutput("viz2"), solidHeader = TRUE, 
+                                    status = "primary",
                                     plotOutput("bar")),
-                                
                                 box(title = "Pie Chart Summary", status = "primary",
-                                    textOutput("pie.chart.summary")
-                                ),
+                                    textOutput("pie.chart.summary")),
                                 box(title = "Point Graph Summary", status = "primary",
-                                    textOutput("point.graph.summary")
-                                )
-                                
+                                    textOutput("point.graph.summary"))
                                 
                         )
                       )
                   )
                 )
-                                                   )
-                                )
-
-
+  )
+)
 
 shinyUI(ui)
