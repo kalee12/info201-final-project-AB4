@@ -214,15 +214,26 @@ server <- function(input, output) {
       lat <- c(lat, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[2]))
     }
     points <- na.omit(data.frame(houses.data$Name, houses.data$Overall.Rating, long, lat, stringsAsFactors = FALSE))
-    icon <- makeIcon(
-      iconUrl = "data/pin.png",
-      iconWidth = 60, iconHeight = 50
-    )
-    m <- leaflet(data = points) %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(points$long[1], points$lat[1], zoom = 6) %>%
-      addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
     
+    if (input$state != "National") {
+      icon <- makeIcon(
+        iconUrl = "data/pin.png",
+        iconWidth = 60, iconHeight = 50
+      )
+      m <- leaflet(data = points) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(points$long[1], points$lat[1], zoom = 6) %>%
+        addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
+    } else {
+      icon <- makeIcon(
+        iconUrl = "data/pin.png",
+        iconWidth = 30, iconHeight = 20
+      )
+      m <- leaflet(data = points) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(-95.712891, 37.090240, zoom = 4) %>% 
+        addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
+    }
     #} else {
     #m <- leaflet() %>%
     #  addProviderTiles(providers$CartoDB.Positron) %>%
@@ -252,6 +263,9 @@ server <- function(input, output) {
           "Address: ",address, ", ", city, ", ", state, zip, "\n\n",
           "Phone Number: ", phone )
     }
+    else {
+      cat("Select an observation on the tabel below for general data summary. ")
+    }
   })
   output$ratings <- renderPrint({
     s = input$table_rows_selected
@@ -264,6 +278,9 @@ server <- function(input, output) {
           "Health Inspection Rating: ", health, "\n\n",
           "Staffing Rating: ",staff, "\n\n", 
           "RN Staffing Rating: ", rn)
+    }
+    else {
+      cat("Select an observation on the tabel below for ratings/penalty data summary. ")
     }
   })
   
@@ -279,9 +296,7 @@ server <- function(input, output) {
       }else{
         cat("No fines")
       }
-      
     }
-    
   })
   
   output$other <- renderPrint({
@@ -304,6 +319,9 @@ server <- function(input, output) {
           reported.rn, "reported RN hours out of", expected.rn, "expected hours", "\n\n",
           reported.total, "reported total nurse hours out of", expected.total, "expected hours", "\n\n")
     }
+    else {
+      cat("Select an observation on the tabel below for data summary. ")
+    }
   })
   
   output$pie <- renderPlot({
@@ -320,13 +338,15 @@ server <- function(input, output) {
     #pie <- ggplot(mtcars, aes(x = factor(1), fill = factor(cyl))) +
     #  geom_bar(width = 1)
     #pie <- pie + coord_polar(theta = "y")
+    
+    #pie <- ggplotly(pie)
     return(pie)
   })
   
   output$bar <- renderPlot({
     col <- sub("\\$","", houses$Total.Amount.of.Fines.in.Dollars)
     col <- sub("\\.00", "", col)
-    col <- as.numeric(col)
+    col <- as.numeric(col) / 10000
     
     houses <- mutate(houses, Total.Fines = col)
     if (input$state != "National") {
@@ -339,8 +359,9 @@ server <- function(input, output) {
     
     
     
-    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, fill = Overall.Rating)) + geom_col() + 
-      labs(x = "Overall Rating", y = "Fine in Dollars", fill = "Overall Rating")
+    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, color = Overall.Rating)) + geom_point(size = 5) +
+      labs(x = "Overall Rating", y = "Fine in (Ten-Thousand) Dollars", fill = "Overall Rating") + guides(color = FALSE) +
+      theme(axis.title = element_text(size = 16))
     return(bar)
   })
   

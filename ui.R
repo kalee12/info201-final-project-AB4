@@ -91,6 +91,7 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 library(shiny)
+library(leaflet)
 
 library(shinydashboard)
 ratings.range<- range(1,5)
@@ -114,9 +115,9 @@ ui <- fluidPage(
                     selectInput("state", "Location", c("National", state.name)),
                     # selectInput("category", "Category", c("All", "Ratings", "Penalties")),
                     sliderInput("ratings", "Filter by Nursing Home Ratings:",
-                                min=ratings.range[1], max=ratings.range[2], value=ratings.range),
+                                min=ratings.range[1], max=ratings.range[2], value= c(5, 5)),
                     radioButtons("radio", "Filter by Fines:",
-                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, "All" = 3),selected = 3
+                                 choices = list("Has a fine" = 1,"Doesn't have a fine" = 2, "All" = 3),selected = 2
                     )
                     
                     # box(title = "Glossry", height = "250px", width = 12,
@@ -167,11 +168,10 @@ ui <- fluidPage(
                                 
                         ),
                         tabItem(tabName = "graph",
-                                verticalLayout(
-                                  box(title = textOutput("viz"),
-                                      plotOutput("pie")),
-                                  box(title = textOutput("viz2"),
-                                      plotOutput("bar")))
+                                box(title = textOutput("viz"),
+                                    plotOutput("pie")),
+                                box(title = textOutput("viz2"),
+                                    plotOutput("bar"))
                         )
                       )
                   )
