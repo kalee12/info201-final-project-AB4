@@ -1,6 +1,120 @@
+# # Karen
+
+x <- c("$5",  "$44",  "$66")
+strsplit(x, " ")
+
+sub("\\$","", x)
+
+
+x <- "Split the words in a sentence."
+strsplit(x, "$")
+# #install.packages("choroplethrMaps")
+# #install.packages("leaflet")
+# library(choroplethrMaps)
+# library(leaflet)
+# 
+# library(dplyr)
+# library(ggplot2)
+# library(plotly)
+# library(shiny)
+# library(maps)
+# 
+# data(state.map)
+# data(state)
+# houses <- read.csv("data/Provider_Info.csv", stringsAsFactors = FALSE) %>% arrange(Federal.Provider.Number)
+# 
+# server <- function(input, output) {
+#   data <- state.map
+#   interest <- reactive({
+#     if (input$state != "National") {
+#       return(houses.data <- filter(houses, Provider.State == state.abb[match(input$state, state.name)]))
+#     } else {
+#       return(houses)
+#     }
+#   })
+#   
+#   output$map <- renderPlot({
+#     data <- state.map
+#     p <- ggplot(data = data) + geom_polygon(aes(x = long, y = lat, group = group)) + coord_fixed(1.3)
+#     houses.data <- interest()
+#     if (input$state != "National") {
+#       # Filters state map data for selected state
+#       state <- filter(data, region == tolower(input$state))
+#       # Filters nursing home data for selected state
+#       houses.data.location <- houses.data$Location
+#       long <- vector()
+#       lat <- vector()
+#       for (i in 1:length(houses.data$Location)) {
+#         long <- c(long, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[3]))
+#         lat <- c(lat, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[2]))
+#       }
+#       points <- na.omit(data.frame(houses.data$Provider.Name, long, lat, stringsAsFactors = FALSE))
+#       print(length(houses$Provider.Name))
+#       print(colnames(houses.data))
+#       
+#       p <- ggplot() + geom_polygon(data = state, aes(x = long, y = lat, group = group)) + coord_fixed(1.3) +
+#             geom_point(data = points, aes(x = long, y = lat), color = "blue", size = 3) +
+#             geom_point(data = points, aes(x = long, y = lat), color = "black", size = 2)
+#       g <- list(scope = "usa")
+#       x <- plot_geo(data = points, x = ~long, y = ~lat) %>% layout(geo = g)
+#     }
+# 
+#     return(x)
+#     #return(p)
+#   })
+#   
+#   output$lemap <- renderLeaflet({
+#     houses.data <- interest()
+#     if (input$state != "National") {
+#       # Filters state map data for selected state
+#       state <- filter(data, region == tolower(input$state))
+#       # Filters nursing home data for selected state
+#       houses.data.location <- houses.data$Location
+#       long <- vector()
+#       lat <- vector()
+#       for (i in 1:length(houses.data$Location)) {
+#         long <- c(long, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[3]))
+#         lat <- c(lat, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[2]))
+#       }
+#       points <- na.omit(data.frame(houses.data$Provider.Name, long, lat, stringsAsFactors = FALSE))
+#       icon <- makeIcon(
+#         iconUrl = "data/pin.png",
+#         iconWidth = 60, iconHeight = 50
+#       )
+#       m <- leaflet(data = points) %>% 
+#         addProviderTiles(providers$CartoDB.Positron) %>% 
+#         setView(points$long[1], points$lat[1], zoom = 6) %>% 
+#         addMarkers(~long, ~lat, popup = "hi", label = "hello", icon = icon)
+# 
+#     } else {
+#       m <- leaflet() %>% 
+#             addProviderTiles(providers$CartoDB.Positron) %>%
+#               setView(-95.712891, 37.090240, zoom = 3)
+#     }
+#       return(m)
+#   })
+#   
+#   output$text <- renderText({
+#     return(input$state)
+#   })
+#   
+#   output$house <- renderText({
+#     return("something here")
+#   })
+#   
+#   output$table <- renderDataTable({
+#     return(interest())
+#   })
+# }
+# 
+# shinyServer(server)
+# 
+# #unlist(strsplit(unlist(strsplit(dummy$Location[1], "\n"))[3], "[(),]"))
+
+#install.packages("DT")
 #library(choroplethrMaps)
 library(leaflet)
-
+library(DT)
 library(dplyr)
 library(ggplot2)
 library(plotly)
@@ -88,64 +202,39 @@ server <- function(input, output) {
   
   output$lemap <- renderLeaflet({
     houses.data <- table.filter()
-    if (input$state != "National") {
-      # Filters state map data for selected state
-      #state <- filter(data, region == tolower(input$state))
-      # Filters nursing home data for selected state
-      houses.data.location <- houses.data$Location
-      long <- vector()
-      lat <- vector()
-      for (i in 1:length(houses.data$Location)) {
-        long <- c(long, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[3]))
-        lat <- c(lat, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[2]))
-      }
-      points <- na.omit(data.frame(houses.data$Name, houses.data$Overall.Rating, long, lat, stringsAsFactors = FALSE))
-      icon <- makeIcon(
-        iconUrl = "data/pin.png",
-        iconWidth = 60, iconHeight = 50
-      )
-      m <- leaflet(data = points) %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(points$long[1], points$lat[1], zoom = 6) %>%
-        addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
-      
-    } else {
-      m <- leaflet() %>%
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(-95.712891, 37.090240, zoom = 3)
+    #if (input$state != "National") {
+    # Filters state map data for selected state
+    #state <- filter(data, region == tolower(input$state))
+    # Filters nursing home data for selected state
+    houses.data.location <- houses.data$Location
+    long <- vector()
+    lat <- vector()
+    for (i in 1:length(houses.data$Location)) {
+      long <- c(long, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[3]))
+      lat <- c(lat, as.numeric(unlist(strsplit(unlist(strsplit(houses.data$Location[i], "\n"))[3], "[(),]"))[2]))
     }
+    points <- na.omit(data.frame(houses.data$Name, houses.data$Overall.Rating, long, lat, stringsAsFactors = FALSE))
+    icon <- makeIcon(
+      iconUrl = "data/pin.png",
+      iconWidth = 60, iconHeight = 50
+    )
+    m <- leaflet(data = points) %>%
+      addProviderTiles(providers$CartoDB.Positron) %>%
+      setView(points$long[1], points$lat[1], zoom = 6) %>%
+      addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
+    
+    #} else {
+    #m <- leaflet() %>%
+    #  addProviderTiles(providers$CartoDB.Positron) %>%
+    #  setView(-95.712891, 37.090240, zoom = 3)
+    #}
     return(m)
   })
   
-  output$introduction <- renderPrint(
-#     paste("Nursing Homes are one of the fastest growing practices in the country today. 
-# With 60,000 nursing homes currently running in the country, it is difficult to find 
-# one that best suits everyone's needs. The nursing home finder is the end to all of 
-# your problems. This project is intended to ease the search process and help adults 
-# (25 and above) find a perfect nursing home for their parent(s). We have based this 
-# project on the official datasets available on the", a("medicare.gov", href = 'https://www.medicare.gov/'), 
-# "Nursing Home Compare  Website provided by the Centers for Medicare & Medicaid Services. 
-# This dataset allows one to compare the quality of care at every Medicare and Medicaid-certified Nursing 
-# Home currently running in the country. This tool will help you compare nursing homes 
-# in 50 states. Initially you would see the national map with a table showing the basic 
-# provider information(Name, Phone Number, Address, City, State, Fines and Overall Rating). 
-# You can choose a state from the drop down on the side, and you would see a close up map of 
-# your state, with location maps for each nursing home. You can hover over the location pins to 
-# see the names of the nursing homes. Below the map, the table is filtered to the specific state’s 
-# nursing homes. You can also filter the overall rating (from 1 to 5), and see the nursing homes 
-# with/without fines or all of them, according to your choices. This will further filter the location 
-# points and the table. You can select a specific nursing home at a time, and then toggle between the 
-# General Provider Information, Ratings and Penalties and Other Information for the specific nursing 
-# home on the side. The General Information tab will show the Name, Address and the Phone Number of 
-# the nursing homes. The Ratings and Penalties tab will show more specific ratings and penalties such 
-# as Overall Rating, Health Inspection Rating, Staffing Rating, Registered Nurse Staffing Rating and 
-# the Total Amount of fine due. The Other Information tab has information on the maximum capacity of 
-# residents(that is, the number of certified beds), the current residents, the reported hours out of 
-# expected hours for Certified Nursing Assistant(CNA), Licesened Practical Nurses (LPN), Registered Nurses(RN) 
-# and for all nurses. You also have the ability to search the table and select the number of specific entires you 
-# would like to see in the table. There is a glossary available for you to help understand the difference 
-# between the different types of Nurses available and their respective information given in the table.")
-    )
+  output$summary <- renderText({
+    num.homes <- nrow(table.filter())
+    paste("There are", num.homes, "homes in", input$state)
+  })
   
   output$table <- DT::renderDataTable(select(table.filter(), -Location), server = TRUE, selection = "single")
   
@@ -217,6 +306,51 @@ server <- function(input, output) {
     }
   })
   
+  output$pie <- renderPlot({
+    if (input$state != "National") {
+      data <- filter(houses.info, State == state.abb[match(input$state, state.name)])
+      data <- na.omit(data)
+    } else {
+      data <- na.omit(houses.info)
+    }
+    pie <- ggplot(data, mapping = aes(x = factor(1), fill = factor(Overall.Rating))) + geom_bar(width = 1) + 
+      coord_polar(theta = "y") + scale_fill_brewer(palette = "RdYlGn") + 
+      labs(x = "", y = "", fill = "Overall Rating")
+    
+    #pie <- ggplot(mtcars, aes(x = factor(1), fill = factor(cyl))) +
+    #  geom_bar(width = 1)
+    #pie <- pie + coord_polar(theta = "y")
+    return(pie)
+  })
+  
+  output$bar <- renderPlot({
+    col <- sub("\\$","", houses$Total.Amount.of.Fines.in.Dollars)
+    col <- sub("\\.00", "", col)
+    col <- as.numeric(col)
+    
+    houses <- mutate(houses, Total.Fines = col)
+    if (input$state != "National") {
+      data <- filter(houses, Provider.State == state.abb[match(input$state, state.name)])
+      data <- na.omit(data)
+    } else {
+      data <- na.omit(houses)
+    }
+    #print(colnames(houses))
+    
+    
+    
+    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, fill = Overall.Rating)) + geom_col() + 
+      labs(x = "Overall Rating", y = "Fine in Dollars", fill = "Overall Rating")
+    return(bar)
+  })
+  
+  output$viz <- renderText({
+    return(paste("Frequency of Ratings in", input$state))
+  })
+  
+  output$viz2 <- renderText({
+    return(paste("Comparison between Rating and something", input$state))
+  })
 }
 
 shinyServer(server)
