@@ -1,5 +1,3 @@
-# Simran
-
 # loading the different libraries required
 library(leaflet)
 library(DT)
@@ -51,8 +49,10 @@ colnames(general.info) <- c("name", "phone.number", "address", "city", "state",
                             "reported.lpn", "reported.rn", "reported.total",
                             "expected.cna", "expected.lpn", "expected.rn", "expected.total")
 
-# function to help assign whether the houses have a penalty or not, by creating a vector
+
+# help assign whether the houses have a penalty or not, depending on the number of fines
 fines <- c()
+
 for(i in 1:nrow(houses.info)){
   if(houses.info$Number.of.Fines[i] == "0"){
     fines <- append(fines, "No")
@@ -88,12 +88,66 @@ server <- function(input, output) {
       houses.info<- houses.info %>% filter(Fines == "No")
     }else{
       houses.info <- select(houses.info, Name, Phone.Number, Address, City, State, Fines, Overall.Rating, Location)
+      
     }
+    
     return(houses.info)
   }
   )
   
-  # displaying the logo for our project
+  # displaying the introduction for our project tab
+  output$introduction <- renderPrint({
+    div (
+      HTML("<h2> Our Mission: <h2/>
+           <br/>
+           Nursing Homes are one of the fastest growing practices in the country today. With 60,000
+           nursing homes currently running in the country, it is difficult to find one that best suits everyone needs. The nursing home
+           finder is the end to all of your problems. This project is intended to ease the search process and help adults (25 and above)
+           find a perfect nursing home for their parent(s). We have based this project on the official datasets available on the
+           <a href= 'https://www.medicare.gov/'> Medicare.gov </a> Nursing Home Compare Website provided by the Centers for Medicare & Medicaid Services. This dataset allows one to compare
+           the quality of care at every Medicare and Medicaid-certified Nursing Home currently running in the country.
+           <br/> <br/>
+           <h2> Navigating through the application: <h2/> <br/>
+           This tool will help you compare nursing homes in 50 states. Initially you would see the national map with a table
+           showing the basic provider information(Name, Phone Number, Address, City, State, Fines and Overall Rating).
+           You can choose a state from the drop down on the side, and you would see a close up map of your state,
+           with location maps for each nursing home. You can hover over the location pins to see the names of the nursing homes.
+           Below the map, the table is filtered to the specific state's nursing homes. You can also filter the overall rating
+           (from 1 to 5), and see the nursing homes with/without fines or all of them, according to your choices.
+           This will further filter the location points and the table.
+           <br/> <br/>
+           You can select a specific nursing home at a time, and then toggle between the General Provider Information,
+           Ratings and Penalties and Other Information for the specific nursing home on the side. The General Information tab
+           will show the Name, Address and the Phone Number of the nursing homes. The Ratings and Penalties tab will show more
+           specific ratings and penalties such as Overall Rating, Health Inspection Rating, Staffing Rating,
+           Registered Nurse Staffing Rating and the Total Amount of fine due. The Other Information tab has
+           information on the maximum capacity of residents(that is, the number of certified beds), the current residents,
+           the reported hours out of expected hours for Certified Nursing Assistant(CNA), Licesened Practical Nurses (LPN),
+           Registered Nurses(RN) and for all nurses.
+           <br/> <br/>
+           You also have the ability to search the table and select the number of specific entires you would like to see in the table.
+           There is a glossary available for you to help understand the difference between the different types of Nurses available and
+           their respective information given in the table.
+           <br/> <br/>
+           You can toggle to another tab to view the statistical analysis available for this project. There you will see a pie chart displaying
+           the variant frequencies of the overall ratings, according to the state that you choose. There is also a bar graph where you will be 
+           able to see the comparison of the ratings with the maximum penalty for that rating, for the nursing homes in the state that you have chosen.
+           "
+      )
+      )
+  })
+  
+  output$pie.chart.summary <- renderPrint({
+    
+    ###### Insert summary 1 here ############
+  })
+  
+  output$point.graph.summary <- renderPrint({
+    
+    ###### Insert summary 2 here ############
+  })
+  
+  # displaying the logo 
   output$logo <- renderImage({
     list(src = "data/info201logo.png",
          contentType = 'image/png',
@@ -122,18 +176,34 @@ server <- function(input, output) {
     # a data frame for the name and the overall rating of the nursing home
     points <- na.omit(data.frame(houses.data$Name, houses.data$Overall.Rating, long, lat, stringsAsFactors = FALSE))
     
-    # setting icons for the nursing houses shown
-    icon <- makeIcon(
-      iconUrl = "data/pin.png",
-      iconWidth = 60, iconHeight = 50
-    )
-    
-    # sets the map according to the nursing homes, setting the view according to latitude and longitude chosen,
-    # adds markers and labels for each nursing home
-    m <- leaflet(data = points) %>%
-      addProviderTiles(providers$CartoDB.Positron) %>%
-      setView(points$long[1], points$lat[1], zoom = 6) %>%
-      addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
+    # setting icons for the nursing houses shown on the map, according to state o
+    if (input$state != "National") {
+      icon <- makeIcon(
+        iconUrl = "data/pin.png",
+        iconWidth = 60, iconHeight = 50
+      )
+      
+      # sets the map according to the nursing homes, setting the view according to latitude and longitude chosen,
+      # adds markers and labels for each nursing home
+      m <- leaflet(data = points) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(points$long[1], points$lat[1], zoom = 6) %>%
+        addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
+    } else {
+      
+      # setting icons for the nursing houses shown on the map, according to the country
+      icon <- makeIcon(
+        iconUrl = "data/pin.png",
+        iconWidth = 30, iconHeight = 20
+      )
+      
+      # sets the map according to the nursing homes, setting the view according to latitude and longitude
+      # of the entire country, adds markers and labels for each nursing home
+      m <- leaflet(data = points) %>%
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(-95.712891, 37.090240, zoom = 4) %>% 
+        addMarkers(~long, ~lat, label = ~houses.data.Name, icon = icon)
+    }
     
     return(m)
   })
@@ -141,7 +211,7 @@ server <- function(input, output) {
   # summary for number of nursing homes shown in the map of the state chosen
   output$summary <- renderText({
     num.homes <- nrow(table.filter())
-    paste("There are", num.homes, "nursing homes in", input$state)
+    paste("There are", num.homes, "homes in", input$state)
   })
   
   # shows the table with provider information for the nursing homes of the chosen states
@@ -151,7 +221,7 @@ server <- function(input, output) {
   output$general <- renderPrint({
     
     # represents the selected nursing home by the user
-    s = input$table_rows_selected
+    s <- input$table_rows_selected
     
     # the name of the selected nursing home
     name <- houses$Provider.Name[s]
@@ -177,13 +247,17 @@ server <- function(input, output) {
           "Address: ",address, ", ", city, ", ", state, zip, "\n\n",
           "Phone Number: ", phone )
     }
+    else {
+      # output if no specific nursing home chosen by the user
+      cat("Select an observation on the table below for general data summary. ")
+    }
   })
   
   # prints the rating summary of the selected nursing home by the user
   output$ratings <- renderPrint({
     
     # represents the selected nursing home by the user
-    s = input$table_rows_selected
+    s <- input$table_rows_selected
     
     # the overall rating of the selected nursing home
     overall <- ratings$Overall.Rating[s]
@@ -205,13 +279,17 @@ server <- function(input, output) {
           "Staffing Rating: ",staff, "\n\n", 
           "RN Staffing Rating: ", rn)
     }
+    else {
+      # output if no selected nursing home is chosen by user
+      cat("Select an observation on the table below for ratings/penalty data summary. ")
+    }
   })
   
   # prints the summary of the penalties charged to the selected nursing home by the user
   output$penalties <- renderPrint({
     
     # represents the selected nursing home by the user
-    s = input$table_rows_selected
+    s <- input$table_rows_selected
     
     # the type of penalty charged by the selected nursing home
     type <- penalty$Penalty.Type[s]
@@ -219,7 +297,7 @@ server <- function(input, output) {
     # the amount of fine paid by the selected nursing home
     amount <- penalty$Fine.Amount[s]
     
-    # the total amount of fines in dollars paid by the selected nursing hoem
+    # the total amount of fines in dollars paid by the selected nursing home
     total <- houses$Total.Amount.of.Fines.in.Dollars[s]
     
     # outputs the total amount of fines for the selected nursing home, depending 
@@ -237,8 +315,8 @@ server <- function(input, output) {
   # above information for the selected nursing home by the user
   output$other <- renderPrint({
     
-    # represents the selected nursing home by the user
-    s = input$table_rows_selected
+    #  represents the selected nursing home by the user
+    s <- input$table_rows_selected
     
     # the maximum capacity in the selected nursing home
     number.beds <- general.info$certified.beds[s]
@@ -279,6 +357,11 @@ server <- function(input, output) {
           reported.rn, "reported RN hours out of", expected.rn, "expected hours", "\n\n",
           reported.total, "reported total nurse hours out of", expected.total, "expected hours", "\n\n")
     }
+    else {
+      
+      # output if no nursing home selected by user
+      cat("Select an observation on the table below for data summary. ")
+    }
   })
   
   # outputs a pie chart for the frequencies of overall ratings for the nursing homes in the selected location
@@ -288,7 +371,7 @@ server <- function(input, output) {
     if (input$state != "National") {
       data <- filter(houses.info, State == state.abb[match(input$state, state.name)])
       data <- na.omit(data)
-    } else { 
+    } else {
       data <- na.omit(houses.info)
     }
     
@@ -296,13 +379,16 @@ server <- function(input, output) {
     pie <- ggplot(data, mapping = aes(x = factor(1), fill = factor(Overall.Rating))) + geom_bar(width = 1) + 
       coord_polar(theta = "y") + scale_fill_brewer(palette = "RdYlGn") + 
       labs(x = "", y = "", fill = "Overall Rating")
+    
     return(pie)
   })
   
+  # outputs a bar graph comparing the overall ratings with the maximum penalty frequency in that rating, for the nursing homes
+  # in the filtered state
   output$bar <- renderPlot({
     col <- sub("\\$","", houses$Total.Amount.of.Fines.in.Dollars)
     col <- sub("\\.00", "", col)
-    col <- as.numeric(col)
+    col <- as.numeric(col) / 10000
     
     houses <- mutate(houses, Total.Fines = col)
     if (input$state != "National") {
@@ -311,8 +397,9 @@ server <- function(input, output) {
     } else {
       data <- na.omit(houses)
     }
-    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, fill = Overall.Rating)) + geom_col() + 
-      labs(x = "Overall Rating", y = "Fine in Dollars", fill = "Overall Rating")
+    bar <- ggplot(data, mapping = aes(x = Overall.Rating, y = Total.Fines, color = Overall.Rating)) + geom_point(size = 5) +
+      labs(x = "Overall Rating", y = "Fine in (Ten-Thousand) Dollars", fill = "Overall Rating") + guides(color = FALSE) +
+      theme(axis.title = element_text(size = 16))
     return(bar)
   })
   
@@ -321,9 +408,10 @@ server <- function(input, output) {
     return(paste("Frequency of Ratings in", input$state))
   })
   
+  # title and description for the bar graph plotted
   output$viz2 <- renderText({
     return(paste("Comparison between Rating and something", input$state))
   })
-}
+  }
 
 shinyServer(server)
